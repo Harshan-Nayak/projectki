@@ -143,24 +143,45 @@ const styles = StyleSheet.create({
     }),
   },
   card: {
-    padding: 16,
+    padding: 12,
     marginBottom: 12,
     borderRadius: 16,
     backgroundColor: '#EBEBEB',
   },
   cardHeader: {
     flexDirection: 'row',
-    marginBottom: 12,
+    marginBottom: 8,
+  },
+  headerInfo: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  domain: {
+    marginBottom: 8,
+  },
+  domainText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#000000',
+    opacity: 0.8,
+  },
+  sectionTitle: {
+    marginTop: 8,
+    marginBottom: 6,
+  },
+  chatButton: {
+    position: 'absolute',
+    right: 12,
+    top: 12,
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: '#F5F5F5',
   },
   avatar: {
     width: 60,
     height: 60,
     borderRadius: 30,
     marginRight: 12,
-  },
-  headerInfo: {
-    flex: 1,
-    justifyContent: 'center',
   },
   role: {
     fontSize: 14,
@@ -173,18 +194,6 @@ const styles = StyleSheet.create({
     opacity: 0.6,
     marginTop: 2,
     color: '#000000',
-  },
-  domain: {
-    marginBottom: 12,
-  },
-  domainText: {
-    fontSize: 14,
-    opacity: 0.7,
-    color: '#000000',
-  },
-  sectionTitle: {
-    marginTop: 12,
-    marginBottom: 8,
   },
   sectionTitleText: {
     fontSize: 14,
@@ -236,6 +245,9 @@ function ProfileCard({ profile }: { profile: UserProfile }) {
             <ThemedText style={styles.role}>{profile.role}</ThemedText>
             <ThemedText style={styles.location}>{profile.location}</ThemedText>
           </View>
+          <TouchableOpacity style={styles.chatButton}>
+            <IconSymbol name="bubble.left" size={24} color="#000000" />
+          </TouchableOpacity>
         </View>
         <View style={styles.domain}>
           <ThemedText style={styles.domainText}>{profile.domain}</ThemedText>
