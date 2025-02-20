@@ -1,9 +1,10 @@
-import { StyleSheet, ScrollView, View, TextInput, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, ScrollView, View, TextInput, TouchableOpacity, Image, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
+import { IconSymbol } from '@/components/ui/IconSymbol';
 
 type UserProfile = {
   id: string;
@@ -11,17 +12,31 @@ type UserProfile = {
   role: string;
   domain: string;
   skills: string[];
+  interests: string[];
   avatar: string;
   location: string;
 };
+
+const DOMAINS = [
+  'Technology & Engineering',
+  'Business Development & Strategy',
+  'Marketing & Sales',
+  'Finance & Accounting',
+  'Design & UI/UX',
+  'Product Management',
+  'Operations & Human Resources',
+  'Legal & Compliance',
+  'Data Analytics & Business Intelligence'
+];
 
 const dummyProfiles: UserProfile[] = [
   {
     id: '1',
     name: 'David Kim',
     role: 'Software Engineer',
-    domain: 'Technology',
+    domain: 'Technology & Engineering',
     skills: ['React Native', 'Node.js', 'AWS'],
+    interests: ['AI/ML', 'Mobile Development', 'Cloud Architecture'],
     avatar: 'https://i.pravatar.cc/150?img=4',
     location: 'San Francisco, CA'
   },
@@ -29,12 +44,35 @@ const dummyProfiles: UserProfile[] = [
     id: '2',
     name: 'Rachel Chen',
     role: 'Product Manager',
-    domain: 'Product',
+    domain: 'Product Management',
     skills: ['Product Strategy', 'UX Design', 'Agile'],
+    interests: ['User Research', 'Market Analysis', 'Team Leadership'],
     avatar: 'https://i.pravatar.cc/150?img=5',
     location: 'New York, NY'
   },
+  {
+    id: '3',
+    name: 'Sarah Johnson',
+    role: 'UX Designer',
+    domain: 'Design & UI/UX',
+    skills: ['Figma', 'User Research', 'Prototyping'],
+    interests: ['Design Systems', 'Accessibility', 'Motion Design'],
+    avatar: 'https://i.pravatar.cc/150?img=6',
+    location: 'London, UK'
+  },
+  {
+    id: '4',
+    name: 'Michael Zhang',
+    role: 'Data Scientist',
+    domain: 'Data Analytics & Business Intelligence',
+    skills: ['Python', 'Machine Learning', 'SQL'],
+    interests: ['Deep Learning', 'NLP', 'Data Visualization'],
+    avatar: 'https://i.pravatar.cc/150?img=7',
+    location: 'Toronto, Canada'
+  }
 ];
+
+import { useState } from 'react';
 
 const styles = StyleSheet.create({
   container: {
@@ -47,20 +85,62 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     marginTop: 12,
-    borderRadius: 12,
-    padding: 12,
+    borderRadius: 50,
+    padding: 4,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  searchIcon: {
+    marginRight: 8,
+    marginLeft: 12,
+    width: 24,
+    height: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   searchInput: {
-    fontSize: 16,
+    flex: 1,
+    fontSize: 14,
     color: '#000000',
+  },
+  domainsScroll: {
+    marginTop: 16,
+  },
+  domainsContainer: {
+    paddingRight: 16,
+    gap: 8,
+  },
+  domainChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+    borderRadius: 20,
+    backgroundColor: '#F5F5F5',
+  },
+  selectedDomainChip: {
+    backgroundColor: '#000000',
+  },
+  domainChipText: {
+    fontSize: 14,
+    color: '#000000',
+  },
+  selectedDomainText: {
+    color: '#FFFFFF',
   },
   profilesList: {
     flex: 1,
+  },
+  profilesListContent: {
+    paddingBottom: Platform.select({
+      ios: 100,
+      android: 100,
+      default: 80
+    }),
   },
   card: {
     padding: 16,
@@ -102,6 +182,16 @@ const styles = StyleSheet.create({
     opacity: 0.7,
     color: '#000000',
   },
+  sectionTitle: {
+    marginTop: 12,
+    marginBottom: 8,
+  },
+  sectionTitleText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#000000',
+    opacity: 0.8,
+  },
   skillsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -111,12 +201,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 20,
-    backgroundColor: '#00ADB5',
+    backgroundColor: '#000000'
   },
   skillText: {
-    color: '#fff',
-    fontSize: 12,
+    color: '#FFFFFF',
+    fontSize: 14
   },
+  interestsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8
+  },
+  interestTag: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: '#F5F5F5',
+    marginBottom: 8
+  },
+  interestText: {
+    color: '#000000',
+    fontSize: 14
+  }
 });
 
 function ProfileCard({ profile }: { profile: UserProfile }) {
@@ -134,10 +240,23 @@ function ProfileCard({ profile }: { profile: UserProfile }) {
         <View style={styles.domain}>
           <ThemedText style={styles.domainText}>{profile.domain}</ThemedText>
         </View>
+        <View style={styles.sectionTitle}>
+          <ThemedText style={styles.sectionTitleText}>Skills</ThemedText>
+        </View>
         <View style={styles.skillsContainer}>
           {profile.skills.map((skill, index) => (
-            <View key={index} style={[styles.skillTag, { backgroundColor: '#00ADB5' }]}>
+            <View key={index} style={[styles.skillTag, { backgroundColor: '#000000' }]}>
               <ThemedText style={styles.skillText}>{skill}</ThemedText>
+            </View>
+          ))}
+        </View>
+        <View style={styles.sectionTitle}>
+          <ThemedText style={styles.sectionTitleText}>Interests</ThemedText>
+        </View>
+        <View style={styles.interestsContainer}>
+          {profile.interests.map((interest, index) => (
+            <View key={index} style={styles.interestTag}>
+              <ThemedText style={styles.interestText}>{interest}</ThemedText>
             </View>
           ))}
         </View>
@@ -147,20 +266,59 @@ function ProfileCard({ profile }: { profile: UserProfile }) {
 }
 
 export default function ExploreScreen() {
+  const [selectedDomain, setSelectedDomain] = useState<string>('All');
+
+  const filteredProfiles = selectedDomain === 'All'
+    ? dummyProfiles
+    : dummyProfiles.filter(profile => profile.domain === selectedDomain);
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
-        <ThemedText type="title">Explore Profiles</ThemedText>
-        <View style={[styles.searchContainer, { backgroundColor: '#F5F5F5' }]}>
+        <ThemedText type="title">Build Your Next Team</ThemedText>
+        <View style={[styles.searchContainer, { backgroundColor: '#FFFFFF' }]}>
+          <View style={styles.searchIcon}>
+            <IconSymbol
+              name="magnifyingglass"
+              size={24}
+              color="#000000"
+            />
+          </View>
           <TextInput
-            placeholder="Search by skills, domain..."
+            placeholder="Search . . ."
             placeholderTextColor="#999999"
             style={styles.searchInput}
           />
         </View>
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false} 
+          style={styles.domainsScroll}
+          contentContainerStyle={styles.domainsContainer}
+        >
+          <TouchableOpacity 
+            style={[styles.domainChip, selectedDomain === 'All' && styles.selectedDomainChip]} 
+            onPress={() => setSelectedDomain('All')}
+          >
+            <ThemedText style={[styles.domainChipText, selectedDomain === 'All' && styles.selectedDomainText]}>All</ThemedText>
+          </TouchableOpacity>
+          {DOMAINS.map((domain) => (
+            <TouchableOpacity 
+              key={domain}
+              style={[styles.domainChip, selectedDomain === domain && styles.selectedDomainChip]}
+              onPress={() => setSelectedDomain(domain)}
+            >
+              <ThemedText style={[styles.domainChipText, selectedDomain === domain && styles.selectedDomainText]}>{domain}</ThemedText>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
       </View>
-      <ScrollView style={styles.profilesList}>
-        {dummyProfiles.map(profile => (
+      <ScrollView 
+        style={styles.profilesList}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.profilesListContent}
+      >
+        {filteredProfiles.map(profile => (
           <ProfileCard key={profile.id} profile={profile} />
         ))}
       </ScrollView>
