@@ -1,4 +1,5 @@
 import { StyleSheet, ScrollView, View, TextInput, TouchableOpacity, Image } from 'react-native';
+import { IconSymbol } from '@/components/ui/IconSymbol';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -51,7 +52,7 @@ function ChatPreviewCard({ chat }: { chat: ChatPreview }) {
               {chat.lastMessage}
             </ThemedText>
             {chat.unreadCount > 0 && (
-              <View style={[styles.unreadBadge, { backgroundColor: '#00ADB5' }]}>
+              <View style={[styles.unreadBadge, { backgroundColor: '#000000' }]}>
                 <ThemedText style={styles.unreadCount}>{chat.unreadCount}</ThemedText>
               </View>
             )}
@@ -66,12 +67,18 @@ export default function ChatsScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
-        <ThemedText type="title">Messages</ThemedText>
-        <View style={[styles.searchContainer, { backgroundColor: '#F5F5F5' }]}>
+        <View style={[styles.searchContainer, { backgroundColor: '#FFFFFF' }]}>
+          <View style={styles.searchIcon}>
+            <IconSymbol
+              name="magnifyingglass"
+              size={24}
+              color="#000000"
+            />
+          </View>
           <TextInput
-            placeholder="Search conversations..."
+            placeholder="Search . . ."
             placeholderTextColor="#999999"
-            style={[styles.searchInput, { color: '#000000' }]}
+            style={styles.searchInput}
           />
         </View>
       </View>
@@ -95,16 +102,29 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     marginTop: 12,
-    borderRadius: 12,
-    padding: 12,
+    borderRadius: 50,
+    padding: 4,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  searchIcon: {
+    marginRight: 8,
+    marginLeft: 12,
+    width: 24,
+    height: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   searchInput: {
-    fontSize: 16,
+    flex: 1,
+    fontSize: 14,
+    color: '#000000',
   },
   chatsList: {
     flex: 1,
