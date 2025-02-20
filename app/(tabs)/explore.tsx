@@ -175,7 +175,6 @@ const styles = StyleSheet.create({
     top: 12,
     padding: 8,
     borderRadius: 20,
-    backgroundColor: '#F5F5F5',
   },
   avatar: {
     width: 60,
