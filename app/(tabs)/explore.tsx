@@ -216,20 +216,18 @@ const styles = StyleSheet.create({
     fontSize: 14
   },
   interestsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8
+    marginTop: 8,
+    paddingLeft: 8
   },
   interestTag: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    backgroundColor: '#F5F5F5',
-    marginBottom: 8
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4
   },
   interestText: {
     color: '#000000',
-    fontSize: 14
+    fontSize: 14,
+    marginLeft: 8
   }
 });
 
@@ -267,6 +265,7 @@ function ProfileCard({ profile }: { profile: UserProfile }) {
         <View style={styles.interestsContainer}>
           {profile.interests.map((interest, index) => (
             <View key={index} style={styles.interestTag}>
+              <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: '#000000' }} />
               <ThemedText style={styles.interestText}>{interest}</ThemedText>
             </View>
           ))}
