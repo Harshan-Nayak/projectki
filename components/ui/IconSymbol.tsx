@@ -13,11 +13,18 @@ const MAPPING = {
   'paperplane.fill': 'send',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
+  'safari.fill': 'explore',
+  'bubble.left.fill': 'chat',
+  'person.circle.fill': 'account-circle',
+  'magnifyingglass': 'search',
+  'plus': 'add',
+  'heart': 'favorite',
+  'bubble.left': 'chat-bubble-outline',
+  'bookmark': 'bookmark-border'
 } as Partial<
   Record<
     import('expo-symbols').SymbolViewProps['name'],
-    React.ComponentProps<typeof MaterialIcons>['name']
-  >
+    React.ComponentProps<typeof MaterialIcons>['name']>
 >;
 
 export type IconSymbolName = keyof typeof MAPPING;

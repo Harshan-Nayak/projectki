@@ -8,14 +8,16 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 
 export function useThemeColor(
   props: { light?: string; dark?: string },
-  colorName: keyof typeof Colors.light & keyof typeof Colors.dark
+  colorName: keyof typeof Colors.light
 ) {
-  const theme = useColorScheme() ?? 'light';
-  const colorFromProps = props[theme];
+  const colorFromProps = props.light;
+  const defaultColors = Colors.light;
 
   if (colorFromProps) {
     return colorFromProps;
+  } else if (defaultColors && typeof defaultColors === 'object' && colorName in defaultColors) {
+    return defaultColors[colorName];
   } else {
-    return Colors[theme][colorName];
+    return '#FFFFFF'; // Fallback color if the property doesn't exist
   }
 }

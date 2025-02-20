@@ -1,109 +1,169 @@
-import { StyleSheet, Image, Platform } from 'react-native';
-
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
+import { StyleSheet, ScrollView, View, TextInput, TouchableOpacity, Image } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { Colors } from '@/constants/Colors';
 
-export default function TabTwoScreen() {
+type UserProfile = {
+  id: string;
+  name: string;
+  role: string;
+  domain: string;
+  skills: string[];
+  avatar: string;
+  location: string;
+};
+
+const dummyProfiles: UserProfile[] = [
+  {
+    id: '1',
+    name: 'David Kim',
+    role: 'Software Engineer',
+    domain: 'Technology',
+    skills: ['React Native', 'Node.js', 'AWS'],
+    avatar: 'https://i.pravatar.cc/150?img=4',
+    location: 'San Francisco, CA'
+  },
+  {
+    id: '2',
+    name: 'Rachel Chen',
+    role: 'Product Manager',
+    domain: 'Product',
+    skills: ['Product Strategy', 'UX Design', 'Agile'],
+    avatar: 'https://i.pravatar.cc/150?img=5',
+    location: 'New York, NY'
+  },
+];
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: '#F8F8F8',
+  },
+  header: {
+    marginBottom: 20,
+  },
+  searchContainer: {
+    marginTop: 12,
+    borderRadius: 12,
+    padding: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  searchInput: {
+    fontSize: 16,
+    color: '#000000',
+  },
+  profilesList: {
+    flex: 1,
+  },
+  card: {
+    padding: 16,
+    marginBottom: 12,
+    borderRadius: 16,
+    backgroundColor: '#EBEBEB',
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    marginBottom: 12,
+  },
+  avatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginRight: 12,
+  },
+  headerInfo: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  role: {
+    fontSize: 14,
+    opacity: 0.8,
+    marginTop: 2,
+    color: '#000000',
+  },
+  location: {
+    fontSize: 12,
+    opacity: 0.6,
+    marginTop: 2,
+    color: '#000000',
+  },
+  domain: {
+    marginBottom: 12,
+  },
+  domainText: {
+    fontSize: 14,
+    opacity: 0.7,
+    color: '#000000',
+  },
+  skillsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  skillTag: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: '#00ADB5',
+  },
+  skillText: {
+    color: '#fff',
+    fontSize: 12,
+  },
+});
+
+function ProfileCard({ profile }: { profile: UserProfile }) {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
+    <TouchableOpacity>
+      <ThemedView style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Image source={{ uri: profile.avatar }} style={styles.avatar} />
+          <View style={styles.headerInfo}>
+            <ThemedText type="subtitle">{profile.name}</ThemedText>
+            <ThemedText style={styles.role}>{profile.role}</ThemedText>
+            <ThemedText style={styles.location}>{profile.location}</ThemedText>
+          </View>
+        </View>
+        <View style={styles.domain}>
+          <ThemedText style={styles.domainText}>{profile.domain}</ThemedText>
+        </View>
+        <View style={styles.skillsContainer}>
+          {profile.skills.map((skill, index) => (
+            <View key={index} style={[styles.skillTag, { backgroundColor: '#00ADB5' }]}>
+              <ThemedText style={styles.skillText}>{skill}</ThemedText>
+            </View>
+          ))}
+        </View>
       </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
-            custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user's current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful <ThemedText type="defaultSemiBold">react-native-reanimated</ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+    </TouchableOpacity>
   );
 }
 
-const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-});
+export default function ExploreScreen() {
+  return (
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <View style={styles.header}>
+        <ThemedText type="title">Explore Profiles</ThemedText>
+        <View style={[styles.searchContainer, { backgroundColor: '#F5F5F5' }]}>
+          <TextInput
+            placeholder="Search by skills, domain..."
+            placeholderTextColor="#999999"
+            style={styles.searchInput}
+          />
+        </View>
+      </View>
+      <ScrollView style={styles.profilesList}>
+        {dummyProfiles.map(profile => (
+          <ProfileCard key={profile.id} profile={profile} />
+        ))}
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
