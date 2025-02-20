@@ -33,12 +33,16 @@ export default function ProfileScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
         <View style={styles.header}>
-          <View style={styles.headerBackground} />
           <View style={styles.profileInfo}>
-            <Image
-              source={{ uri: dummyProfile.avatar }}
-              style={styles.avatar}
-            />
+            <View style={styles.profileImageContainer}>
+              <Image
+                source={{ uri: dummyProfile.avatar }}
+                style={styles.avatar}
+              />
+              <TouchableOpacity style={styles.editImageButton}>
+                <IconSymbol name="pencil" size={20} color="#FFFFFF" />
+              </TouchableOpacity>
+            </View>
             <View style={styles.nameSection}>
               <ThemedText type="subtitle" style={styles.name}>{dummyProfile.name}</ThemedText>
               <ThemedText style={styles.role}>{dummyProfile.role}</ThemedText>
@@ -47,9 +51,16 @@ export default function ProfileScreen() {
                 <ThemedText style={styles.location}>{dummyProfile.location}</ThemedText>
               </View>
             </View>
-            <TouchableOpacity style={styles.editButton}>
-              <IconSymbol name="pencil" size={24} color="#000000" />
-            </TouchableOpacity>
+            <View style={styles.actionButtons}>
+              <TouchableOpacity style={styles.editProfileButton}>
+                <IconSymbol name="pencil" size={20} color="#FFFFFF" />
+                <ThemedText style={styles.buttonText}>Edit Profile</ThemedText>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.logoutButton}>
+                <IconSymbol name="arrow.right.circle" size={20} color="#FF3B30" />
+                <ThemedText style={styles.logoutText}>Logout</ThemedText>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
 
@@ -95,39 +106,50 @@ const styles = StyleSheet.create({
     flex: 1
   },
   header: {
-    position: 'relative',
-    paddingTop: 120
-  },
-  headerBackground: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 150,
-    backgroundColor: '#000000'
-  },
-  profileInfo: {
+    paddingTop: 24,
     paddingHorizontal: 16
   },
+  profileInfo: {
+    alignItems: 'center'
+  },
+  profileImageContainer: {
+    position: 'relative',
+    marginBottom: 16
+  },
   avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
     borderWidth: 4,
-    borderColor: '#F8F8F8',
-    marginTop: -40
+    borderColor: '#F8F8F8'
+  },
+  editImageButton: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#00ADB5',
+    padding: 8,
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3
   },
   nameSection: {
-    marginTop: 12
+    alignItems: 'center',
+    marginBottom: 24
   },
   name: {
     fontSize: 24,
-    fontWeight: '700'
+    fontWeight: '700',
+    textAlign: 'center'
   },
   role: {
     fontSize: 16,
     color: '#666666',
-    marginTop: 4
+    marginTop: 4,
+    textAlign: 'center'
   },
   locationContainer: {
     flexDirection: 'row',
@@ -139,18 +161,40 @@ const styles = StyleSheet.create({
     color: '#666666',
     marginLeft: 4
   },
-  editButton: {
-    position: 'absolute',
-    right: 16,
-    top: -20,
-    backgroundColor: '#FFFFFF',
-    padding: 8,
+  actionButtons: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 12,
+    marginBottom: 24,
+    width: '100%'
+  },
+  editProfileButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#00ADB5',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     borderRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3
+    gap: 8
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600'
+  },
+  logoutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFF0F0',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    gap: 8
+  },
+  logoutText: {
+    color: '#FF3B30',
+    fontSize: 14,
+    fontWeight: '600'
   },
   content: {
     padding: 16
