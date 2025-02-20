@@ -14,7 +14,7 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: '#000000',
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
@@ -31,7 +31,7 @@ export default function TabLayout() {
             paddingHorizontal: 10,
             marginHorizontal: 16,
             borderRadius: 50,
-            backgroundColor: colorScheme === 'dark' ? '#1A1A1A' : '#FFFFFF',
+            backgroundColor:  '#FFFFFF',
             bottom: 20
           },
           default: {
@@ -40,7 +40,7 @@ export default function TabLayout() {
             elevation: 8,
             paddingBottom: 10,
             paddingHorizontal: 10,
-            backgroundColor: colorScheme === 'dark' ? '#1A1A1A' : '#FFFFFF',
+            backgroundColor:  '#FFFFFF',
             marginHorizontal: 16,
             borderRadius: 50,
             bottom: 20
