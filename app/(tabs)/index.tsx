@@ -396,7 +396,7 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
       </View>
-      <ScrollView style={styles.feed}>
+      <ScrollView style={styles.feed} showsVerticalScrollIndicator={false}>
         {dummyOpportunities.map(opportunity => (
           <OpportunityCard key={opportunity.id} opportunity={opportunity} />
         ))}
