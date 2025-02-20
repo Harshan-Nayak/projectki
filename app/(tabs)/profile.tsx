@@ -6,133 +6,81 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 
-type ProfileStats = {
-  connections: number;
-  profileViews: number;
-  pendingRequests: number;
-};
-
 type UserProfile = {
   name: string;
   role: string;
-  bio: string;
+  location: string;
+  domain: string;
   skills: string[];
-  experience: Experience[];
-  education: string;
   interests: string[];
-  stats: ProfileStats;
-};
-
-type Experience = {
-  id: string;
-  role: string;
-  company: string;
-  duration: string;
+  avatar: string;
 };
 
 const dummyProfile: UserProfile = {
   name: 'John Smith',
   role: 'Tech Entrepreneur',
-  bio: 'Passionate about building innovative solutions. Serial entrepreneur with focus on AI and blockchain technologies.',
+  location: 'San Francisco, CA',
+  domain: 'Technology & Engineering',
   skills: ['Product Strategy', 'Team Leadership', 'Startup Growth', 'AI/ML'],
-  experience: [
-    {
-      id: '1',
-      role: 'Founder & CEO',
-      company: 'TechVentures AI',
-      duration: '2020 - Present'
-    },
-    {
-      id: '2',
-      role: 'Product Manager',
-      company: 'InnovateCorp',
-      duration: '2018 - 2020'
-    }
-  ],
-  education: 'MBA - Stanford University',
   interests: ['Artificial Intelligence', 'Blockchain', 'Sustainable Tech'],
-  stats: {
-    connections: 245,
-    profileViews: 89,
-    pendingRequests: 5
-  }
+  avatar: 'https://i.pravatar.cc/150?img=3'
 };
 
-function StatCard({ title, value }: { title: string; value: number }) {
-  return (
-    <ThemedView style={[styles.statCard, { shadowColor: '#000' }]}>
-      <ThemedText style={styles.statValue}>{value}</ThemedText>
-      <ThemedText style={styles.statTitle}>{title}</ThemedText>
-    </ThemedView>
-  );
-}
+
 
 export default function ProfileScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <ScrollView>
-        <ThemedView style={styles.header}>
-          <View style={styles.profileHeader}>
+      <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
+        <View style={styles.header}>
+          <View style={styles.headerBackground} />
+          <View style={styles.profileInfo}>
             <Image
-              source={{ uri: 'https://i.pravatar.cc/150?img=3' }}
-              style={styles.profileImage}
+              source={{ uri: dummyProfile.avatar }}
+              style={styles.avatar}
             />
-            <TouchableOpacity style={[styles.editButton, { backgroundColor: '#00ADB5' }]}>
-              <IconSymbol size={20} name="pencil" color="#fff" />
+            <View style={styles.nameSection}>
+              <ThemedText type="subtitle" style={styles.name}>{dummyProfile.name}</ThemedText>
+              <ThemedText style={styles.role}>{dummyProfile.role}</ThemedText>
+              <View style={styles.locationContainer}>
+                <IconSymbol name="mappin" size={16} color="#666666" />
+                <ThemedText style={styles.location}>{dummyProfile.location}</ThemedText>
+              </View>
+            </View>
+            <TouchableOpacity style={styles.editButton}>
+              <IconSymbol name="pencil" size={24} color="#000000" />
             </TouchableOpacity>
           </View>
-          <ThemedText type="title" style={styles.name}>{dummyProfile.name}</ThemedText>
-          <ThemedText style={styles.role}>{dummyProfile.role}</ThemedText>
-        </ThemedView>
-
-        <View style={styles.statsContainer}>
-          <StatCard title="Connections" value={dummyProfile.stats.connections} />
-          <StatCard title="Profile Views" value={dummyProfile.stats.profileViews} />
-          <StatCard title="Pending" value={dummyProfile.stats.pendingRequests} />
         </View>
 
-        <ThemedView style={styles.section}>
-          <ThemedText type="subtitle">About</ThemedText>
-          <ThemedText style={styles.bio}>{dummyProfile.bio}</ThemedText>
-        </ThemedView>
-
-        <ThemedView style={styles.section}>
-          <ThemedText type="subtitle">Skills</ThemedText>
-          <View style={styles.skillsContainer}>
-            {dummyProfile.skills.map((skill, index) => (
-              <View key={index} style={[styles.skillTag, { backgroundColor: '#00ADB5' }]}>
-                <ThemedText style={styles.skillText}>{skill}</ThemedText>
-              </View>
-            ))}
+        <View style={styles.content}>
+          <View style={styles.domain}>
+            <ThemedText style={styles.domainText}>{dummyProfile.domain}</ThemedText>
           </View>
-        </ThemedView>
 
-        <ThemedView style={styles.section}>
-          <ThemedText type="subtitle">Experience</ThemedText>
-          {dummyProfile.experience.map(exp => (
-            <View key={exp.id} style={styles.experienceItem}>
-              <ThemedText style={styles.expRole}>{exp.role}</ThemedText>
-              <ThemedText style={styles.expCompany}>{exp.company}</ThemedText>
-              <ThemedText style={styles.expDuration}>{exp.duration}</ThemedText>
+          <View style={styles.section}>
+            <ThemedText style={styles.sectionTitle}>Skills</ThemedText>
+            <View style={styles.skillsContainer}>
+              {dummyProfile.skills.map((skill, index) => (
+                <View key={index} style={[styles.skillTag, { backgroundColor: '#000000' }]}>
+                  <ThemedText style={styles.skillText}>{skill}</ThemedText>
+                </View>
+              ))}
             </View>
-          ))}
-        </ThemedView>
-
-        <ThemedView style={styles.section}>
-          <ThemedText type="subtitle">Education</ThemedText>
-          <ThemedText style={styles.education}>{dummyProfile.education}</ThemedText>
-        </ThemedView>
-
-        <ThemedView style={[styles.section, styles.lastSection]}>
-          <ThemedText type="subtitle">Interests</ThemedText>
-          <View style={styles.interestsContainer}>
-            {dummyProfile.interests.map((interest, index) => (
-              <View key={index} style={[styles.interestTag, { backgroundColor: '#F5F5F5' }]}>
-                <ThemedText>{interest}</ThemedText>
-              </View>
-            ))}
           </View>
-        </ThemedView>
+
+          <View style={styles.section}>
+            <ThemedText style={styles.sectionTitle}>Interests</ThemedText>
+            <View style={styles.interestsContainer}>
+              {dummyProfile.interests.map((interest, index) => (
+                <View key={index} style={styles.interestTag}>
+                  <View style={styles.interestDot} />
+                  <ThemedText style={styles.interestText}>{interest}</ThemedText>
+                </View>
+              ))}
+            </View>
+          </View>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -143,122 +91,117 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F8F8F8'
   },
+  scrollView: {
+    flex: 1
+  },
   header: {
-    padding: 16,
-    alignItems: 'center'
-  },
-  profileHeader: {
     position: 'relative',
-    marginBottom: 16
+    paddingTop: 120
   },
-  profileImage: {
-    width: 120,
-    height: 120,
-    borderRadius: 60
-  },
-  editButton: {
+  headerBackground: {
     position: 'absolute',
+    top: 0,
+    left: 0,
     right: 0,
-    bottom: 0,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#00ADB5'
+    height: 150,
+    backgroundColor: '#000000'
+  },
+  profileInfo: {
+    paddingHorizontal: 16
+  },
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderWidth: 4,
+    borderColor: '#F8F8F8',
+    marginTop: -40
+  },
+  nameSection: {
+    marginTop: 12
   },
   name: {
-    marginBottom: 4
+    fontSize: 24,
+    fontWeight: '700'
   },
   role: {
     fontSize: 16,
-    opacity: 0.8
+    color: '#666666',
+    marginTop: 4
   },
-  statsContainer: {
+  locationContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 16
-  },
-  statCard: {
     alignItems: 'center',
-    padding: 12,
-    borderRadius: 12,
-    backgroundColor: '#EBEBEB',
+    marginTop: 8
+  },
+  location: {
+    fontSize: 14,
+    color: '#666666',
+    marginLeft: 4
+  },
+  editButton: {
+    position: 'absolute',
+    right: 16,
+    top: -20,
+    backgroundColor: '#FFFFFF',
+    padding: 8,
+    borderRadius: 20,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3
   },
-  statValue: {
-    fontSize: 20,
-    fontWeight: '600',
-    marginBottom: 4
+  content: {
+    padding: 16
   },
-  statTitle: {
-    fontSize: 12,
-    opacity: 0.8
-  },
-  section: {
-    padding: 16,
-    marginBottom: 8
-  },
-  lastSection: {
+  domain: {
     marginBottom: 24
   },
-  bio: {
-    marginTop: 8,
-    lineHeight: 20
+  domainText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#000000'
+  },
+  section: {
+    marginBottom: 24
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#000000',
+    marginBottom: 12
   },
   skillsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginTop: 8
+    gap: 8
   },
   skillTag: {
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 20,
-    marginRight: 8,
-    marginBottom: 8,
-    backgroundColor: '#00ADB5'
+    borderRadius: 20
   },
   skillText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 14
   },
-  experienceItem: {
-    marginTop: 12
-  },
-  expRole: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 2
-  },
-  expCompany: {
-    fontSize: 14,
-    marginBottom: 2
-  },
-  expDuration: {
-    fontSize: 12,
-    opacity: 0.6
-  },
-  education: {
-    marginTop: 8,
-    fontSize: 16
-  },
   interestsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: 8
+    gap: 12
   },
   interestTag: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    marginRight: 8,
-    marginBottom: 8,
-    backgroundColor: '#EBEBEB',
-    borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.1)'
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  interestDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#000000',
+    marginRight: 8
+  },
+  interestText: {
+    color: '#000000',
+    fontSize: 14
   }
 });
