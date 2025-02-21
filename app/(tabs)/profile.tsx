@@ -6,31 +6,51 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useAuth } from '@/contexts/AuthContext';
-
-type UserProfile = {
-  name: string;
-  role: string;
-  location: string;
-  domain: string;
-  skills: string[];
-  interests: string[];
-  avatar: string;
-};
-
-const dummyProfile: UserProfile = {
-  name: 'John Smith',
-  role: 'Tech Entrepreneur',
-  location: 'San Francisco, CA',
-  domain: 'Technology & Engineering',
-  skills: ['Product Strategy', 'Team Leadership', 'Startup Growth', 'AI/ML'],
-  interests: ['Artificial Intelligence', 'Blockchain', 'Sustainable Tech'],
-  avatar: 'https://i.pravatar.cc/150?img=3'
-};
-
-
+import { useEffect, useState } from 'react';
+import { getProfile, updateProfile, type Profile } from '@/lib/profile';
+import { router } from 'expo-router';
 
 export default function ProfileScreen() {
-  const { signOut } = useAuth();
+  const { signOut, session } = useAuth();
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+
+  useEffect(() => {
+    loadProfile();
+  }, []);
+
+  const loadProfile = async () => {
+    try {
+      const data = await getProfile();
+      setProfile(data);
+    } catch (error) {
+      console.error('Error loading profile:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleEditProfile = () => {
+    router.push({
+      pathname: '/edit-profile',
+      params: {
+        profile,
+        onProfileUpdate: loadProfile
+      }
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container} edges={['top']}>
+        <View style={styles.loadingContainer}>
+          <ThemedText>Loading...</ThemedText>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
@@ -38,7 +58,7 @@ export default function ProfileScreen() {
           <View style={styles.profileInfo}>
             <View style={styles.profileImageContainer}>
               <Image
-                source={{ uri: dummyProfile.avatar }}
+                source={{ uri: profile?.avatar_url || 'https://i.pravatar.cc/150?img=3' }}
                 style={styles.avatar}
               />
               <TouchableOpacity style={styles.editImageButton}>
@@ -46,15 +66,16 @@ export default function ProfileScreen() {
               </TouchableOpacity>
             </View>
             <View style={styles.nameSection}>
-              <ThemedText type="subtitle" style={styles.name}>{dummyProfile.name}</ThemedText>
-              <ThemedText style={styles.role}>{dummyProfile.role}</ThemedText>
+              <ThemedText type="subtitle" style={styles.name}>{profile?.name || 'Add your name'}</ThemedText>
+              <ThemedText style={styles.role}>{profile?.role || 'Add your role'}</ThemedText>
               <View style={styles.locationContainer}>
                 <IconSymbol name="mappin" size={16} color="#666666" />
-                <ThemedText style={styles.location}>{dummyProfile.location}</ThemedText>
+                <ThemedText style={styles.location}>{profile?.location || 'Add your location'}</ThemedText>
               </View>
+              <ThemedText style={styles.email}>{session?.user?.email}</ThemedText>
             </View>
             <View style={styles.actionButtons}>
-              <TouchableOpacity style={styles.editProfileButton}>
+              <TouchableOpacity style={styles.editProfileButton} onPress={handleEditProfile}>
                 <IconSymbol name="pencil" size={20} color="#FFFFFF" />
                 <ThemedText style={styles.buttonText}>Edit Profile</ThemedText>
               </TouchableOpacity>
@@ -71,33 +92,40 @@ export default function ProfileScreen() {
 
         <View style={styles.content}>
           <View style={styles.domain}>
-            <ThemedText style={styles.domainText}>{dummyProfile.domain}</ThemedText>
+            <ThemedText style={styles.domainText}>{profile?.domain || 'Add your domain'}</ThemedText>
           </View>
 
           <View style={styles.section}>
             <ThemedText style={styles.sectionTitle}>Skills</ThemedText>
             <View style={styles.skillsContainer}>
-              {dummyProfile.skills.map((skill, index) => (
+              {(profile?.skills || []).map((skill, index) => (
                 <View key={index} style={[styles.skillTag, { backgroundColor: '#000000' }]}>
                   <ThemedText style={styles.skillText}>{skill}</ThemedText>
                 </View>
               ))}
+              {(profile?.skills || []).length === 0 && (
+                <ThemedText style={styles.emptyText}>Add your skills</ThemedText>
+              )}
             </View>
           </View>
 
           <View style={styles.section}>
             <ThemedText style={styles.sectionTitle}>Interests</ThemedText>
             <View style={styles.interestsContainer}>
-              {dummyProfile.interests.map((interest, index) => (
+              {(profile?.interests || []).map((interest, index) => (
                 <View key={index} style={styles.interestTag}>
                   <View style={styles.interestDot} />
                   <ThemedText style={styles.interestText}>{interest}</ThemedText>
                 </View>
               ))}
+              {(profile?.interests || []).length === 0 && (
+                <ThemedText style={styles.emptyText}>Add your interests</ThemedText>
+              )}
             </View>
           </View>
         </View>
       </ScrollView>
+
     </SafeAreaView>
   );
 }
@@ -106,6 +134,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F8F8F8'
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   scrollView: {
     flex: 1
@@ -155,6 +188,11 @@ const styles = StyleSheet.create({
     color: '#666666',
     marginTop: 4,
     textAlign: 'center'
+  },
+  email: {
+    fontSize: 14,
+    color: '#666666',
+    marginTop: 4
   },
   locationContainer: {
     flexDirection: 'row',
@@ -252,5 +290,10 @@ const styles = StyleSheet.create({
   interestText: {
     color: '#000000',
     fontSize: 14
+  },
+  emptyText: {
+    color: '#666666',
+    fontSize: 14,
+    fontStyle: 'italic'
   }
 });
