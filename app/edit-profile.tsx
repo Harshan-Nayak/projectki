@@ -2,8 +2,8 @@ import { StyleSheet, View, TextInput, TouchableOpacity, ScrollView, Alert, Press
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { useState } from 'react';
-import { updateProfile, type Profile } from '@/lib/profile';
+import { useState, useEffect } from 'react';
+import { updateProfile, getProfile, type Profile } from '@/lib/profile';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -14,14 +14,37 @@ type EditProfileScreenProps = {
 
 export default function EditProfileScreen() {
   const router = useRouter();
-  const profile = router.params?.profile as Profile | null;
+  const [profile, setProfile] = useState<Profile | null>(null);
   const onProfileUpdate = router.params?.onProfileUpdate as () => void;
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [name, setName] = useState(profile?.name || '');
-  const [role, setRole] = useState(profile?.role || '');
-  const [location, setLocation] = useState(profile?.location || '');
-  const [domain, setDomain] = useState(profile?.domain || '');
+  const [name, setName] = useState('');
+  const [role, setRole] = useState('');
+  const [location, setLocation] = useState('');
+  const [domain, setDomain] = useState('');
   const [showDomainPicker, setShowDomainPicker] = useState(false);
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const data = await getProfile();
+        setProfile(data);
+        setName(data?.name || '');
+        setRole(data?.role || '');
+        setLocation(data?.location || '');
+        setDomain(data?.domain || '');
+        setSkills(data?.skills || []);
+        setInterests(data?.interests || []);
+      } catch (error) {
+        console.error('Error loading profile:', error);
+        Alert.alert('Error', 'Failed to load profile data');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadProfile();
+  }, []);
 
   const DOMAINS = [
     'Technology & Engineering',
