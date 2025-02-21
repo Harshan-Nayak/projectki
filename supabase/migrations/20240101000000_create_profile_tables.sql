@@ -71,3 +71,8 @@ create trigger on_profile_update
   before update on public.profiles
   for each row
   execute function public.handle_profile_update();
+
+-- Create insert policy for profiles
+create policy "Users can insert their own profile"
+  on public.profiles for insert
+  with check (auth.uid() = id);

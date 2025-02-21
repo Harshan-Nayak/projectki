@@ -48,30 +48,48 @@ export default function EditProfileScreen() {
   const handleRemoveInterest = (interestToRemove: string) => {
     setInterests(interests.filter(interest => interest !== interestToRemove));
   };
-
   const handleSubmit = async () => {
-    if (!profile) return;
+    if (!name.trim()) {
+      Alert.alert('Error', 'Please enter your name to continue');
+      return;
+    }
 
     try {
+      console.log('Starting profile update...', { name, role, location, domain, skills, interests });
       setIsSubmitting(true);
-      await updateProfile({
-        ...profile,
-        name,
-        role,
-        location,
-        domain,
+
+      // Update profile data
+      const updatedProfile = {
+        id: profile?.id || '', // Ensure we have an ID, even if empty
+        name: name.trim(),
+        role: role.trim(),
+        location: location.trim(),
+        domain: domain.trim(),
         skills,
-        interests
-      });
-      onProfileUpdate();
-      router.back();
+        interests,
+        avatar_url: profile?.avatar_url || '',
+        updated_at: new Date().toISOString()
+      };
+
+      console.log('Sending update request to server...');
+      await updateProfile(updatedProfile);
+      console.log('Profile updated successfully');
+
+      // Show success message
+      Alert.alert('Success', 'Profile updated successfully', [
+        { text: 'OK', onPress: () => {
+          console.log('Triggering profile update callback...');
+          onProfileUpdate();
+          router.back();
+        }}
+      ]);
     } catch (error) {
+      console.error('Profile update failed:', error);
       Alert.alert('Error', error instanceof Error ? error.message : 'Failed to update profile');
     } finally {
       setIsSubmitting(false);
     }
   };
-
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>

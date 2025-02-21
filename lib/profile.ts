@@ -17,22 +17,39 @@ export async function getProfile(): Promise<Profile | null> {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return null;
 
-    const { data: profile } = await supabase
+    const { data: profile, error } = await supabase
       .from('profiles')
-      .select(`
-        *,
-        skills:skills(name),
-        interests:interests(name)
-      `)
+      .select('*')
       .eq('id', user.id)
       .single();
+
+    if (error) {
+      console.error('Error fetching profile:', error);
+      throw error;
+    }
+
+    // Fetch skills and interests separately
+    const { data: skills } = await supabase
+      .from('skills')
+      .select('name')
+      .eq('profile_id', user.id);
+
+    const { data: interests } = await supabase
+      .from('interests')
+      .select('name')
+      .eq('profile_id', user.id);
+
+    if (error) {
+      console.error('Error fetching profile:', error);
+      throw error;
+    }
 
     if (!profile) return null;
 
     return {
       ...profile,
-      skills: profile.skills?.map((s: any) => s.name) || [],
-      interests: profile.interests?.map((i: any) => i.name) || [],
+      skills: skills?.map((s) => s.name) || [],
+      interests: interests?.map((i) => i.name) || []
     };
   } catch (error) {
     console.error('Error fetching profile:', error);
@@ -45,12 +62,19 @@ export async function updateProfile(profile: Partial<Profile>): Promise<void> {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('No user logged in');
 
+    // Prepare profile updates without skills and interests
     const updates = {
       id: user.id,
-      ...profile,
+      name: profile.name,
+      role: profile.role,
+      location: profile.location,
+      domain: profile.domain,
+      avatar_url: profile.avatar_url,
+      email: user.email!,
       updated_at: new Date().toISOString(),
     };
 
+    // Update profile
     const { error } = await supabase
       .from('profiles')
       .upsert(updates);

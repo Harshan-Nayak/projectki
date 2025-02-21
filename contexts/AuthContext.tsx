@@ -31,11 +31,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
     });
     if (error) throw error;
+
+    // Create initial profile for the user
+    if (data.user) {
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert([{
+          id: data.user.id,
+          email: data.user.email,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }]);
+      if (profileError) throw profileError;
+    }
   };
 
   const signIn = async (email: string, password: string) => {
