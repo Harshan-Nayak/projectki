@@ -1,4 +1,4 @@
-import { StyleSheet, View, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { StyleSheet, View, TextInput, TouchableOpacity, ScrollView, Alert, Pressable, Modal } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
@@ -21,6 +21,19 @@ export default function EditProfileScreen() {
   const [role, setRole] = useState(profile?.role || '');
   const [location, setLocation] = useState(profile?.location || '');
   const [domain, setDomain] = useState(profile?.domain || '');
+  const [showDomainPicker, setShowDomainPicker] = useState(false);
+
+  const DOMAINS = [
+    'Technology & Engineering',
+    'Business Development & Strategy',
+    'Marketing & Sales',
+    'Finance & Accounting',
+    'Design & UI/UX',
+    'Product Management',
+    'Operations & Human Resources',
+    'Legal & Compliance',
+    'Data Analytics & Business Intelligence'
+  ];
   const [skillInput, setSkillInput] = useState('');
   const [skills, setSkills] = useState<string[]>(profile?.skills || []);
   const [interestInput, setInterestInput] = useState('');
@@ -53,11 +66,10 @@ export default function EditProfileScreen() {
       Alert.alert('Error', 'Please enter your name to continue');
       return;
     }
-
+  
     try {
-      console.log('Starting profile update...', { name, role, location, domain, skills, interests });
       setIsSubmitting(true);
-
+  
       // Update profile data
       const updatedProfile = {
         id: profile?.id || '', // Ensure we have an ID, even if empty
@@ -70,19 +82,16 @@ export default function EditProfileScreen() {
         avatar_url: profile?.avatar_url || '',
         updated_at: new Date().toISOString()
       };
-
-      console.log('Sending update request to server...');
+  
       await updateProfile(updatedProfile);
-      console.log('Profile updated successfully');
-
-      // Show success message
-      Alert.alert('Success', 'Profile updated successfully', [
-        { text: 'OK', onPress: () => {
-          console.log('Triggering profile update callback...');
-          onProfileUpdate();
-          router.back();
-        }}
-      ]);
+  
+      // Call onProfileUpdate if it exists
+      if (typeof onProfileUpdate === 'function') {
+        onProfileUpdate();
+      }
+  
+      // Navigate back to profile screen
+      router.push('/(tabs)/profile');
     } catch (error) {
       console.error('Profile update failed:', error);
       Alert.alert('Error', error instanceof Error ? error.message : 'Failed to update profile');
@@ -136,13 +145,52 @@ export default function EditProfileScreen() {
 
         <View style={styles.inputContainer}>
           <ThemedText style={styles.label}>Domain</ThemedText>
-          <TextInput
-            style={styles.input}
-            value={domain}
-            onChangeText={setDomain}
-            placeholder="Enter your domain"
-            placeholderTextColor="#999999"
-          />
+          <TouchableOpacity 
+            style={[styles.input, styles.domainInput]} 
+            onPress={() => setShowDomainPicker(true)}
+          >
+            <ThemedText style={domain ? styles.domainText : styles.placeholderText}>
+              {domain || 'Select your domain'}
+            </ThemedText>
+            <IconSymbol name="chevron.down" size={20} color="#666666" />
+          </TouchableOpacity>
+
+          <Modal
+            visible={showDomainPicker}
+            transparent={true}
+            animationType="slide"
+            onRequestClose={() => setShowDomainPicker(false)}
+          >
+            <Pressable 
+              style={styles.modalOverlay}
+              onPress={() => setShowDomainPicker(false)}
+            >
+              <View style={styles.modalContent}>
+                <View style={styles.modalHeader}>
+                  <ThemedText style={styles.modalTitle}>Select Domain</ThemedText>
+                  <TouchableOpacity onPress={() => setShowDomainPicker(false)}>
+                    <IconSymbol name="xmark" size={24} color="#000000" />
+                  </TouchableOpacity>
+                </View>
+                <ScrollView style={styles.domainList}>
+                  {DOMAINS.map((item) => (
+                    <TouchableOpacity
+                      key={item}
+                      style={[styles.domainOption, domain === item && styles.selectedDomain]}
+                      onPress={() => {
+                        setDomain(item);
+                        setShowDomainPicker(false);
+                      }}
+                    >
+                      <ThemedText style={[styles.domainOptionText, domain === item && styles.selectedDomainText]}>
+                        {item}
+                      </ThemedText>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+            </Pressable>
+          </Modal>
         </View>
 
         <View style={styles.inputContainer}>
@@ -313,5 +361,61 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600'
+  },
+  domainInput: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  domainText: {
+    fontSize: 16,
+    color: '#000000'
+  },
+  placeholderText: {
+    fontSize: 16,
+    color: '#999999'
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end'
+  },
+  modalContent: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingBottom: 20,
+    maxHeight: '80%'
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#EEEEEE'
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '600'
+  },
+  domainList: {
+    padding: 16
+  },
+  domainOption: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    marginBottom: 8
+  },
+  selectedDomain: {
+    backgroundColor: '#000000'
+  },
+  domainOptionText: {
+    fontSize: 16,
+    color: '#000000'
+  },
+  selectedDomainText: {
+    color: '#FFFFFF'
   }
 });
