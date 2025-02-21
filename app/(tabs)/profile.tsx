@@ -5,6 +5,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { useAuth } from '@/contexts/AuthContext';
 
 type UserProfile = {
   name: string;
@@ -29,6 +30,7 @@ const dummyProfile: UserProfile = {
 
 
 export default function ProfileScreen() {
+  const { signOut } = useAuth();
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
@@ -56,7 +58,10 @@ export default function ProfileScreen() {
                 <IconSymbol name="pencil" size={20} color="#FFFFFF" />
                 <ThemedText style={styles.buttonText}>Edit Profile</ThemedText>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.logoutButton}>
+              <TouchableOpacity 
+                style={styles.logoutButton}
+                onPress={signOut}
+              >
                 <IconSymbol name="arrow.right.circle" size={20} color="#FF3B30" />
                 <ThemedText style={styles.logoutText}>Logout</ThemedText>
               </TouchableOpacity>
