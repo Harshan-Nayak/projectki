@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     bottom: 0,
-    backgroundColor: '#00ADB5',
+    backgroundColor: '#000000',
     padding: 8,
     borderRadius: 20,
     shadowColor: '#000',
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
   editProfileButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#00ADB5',
+    backgroundColor: '#000000',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,

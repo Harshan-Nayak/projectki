@@ -20,7 +20,9 @@ const MAPPING = {
   'plus': 'add',
   'heart': 'favorite',
   'bubble.left': 'chat-bubble-outline',
-  'bookmark': 'bookmark-border'
+  'bookmark': 'bookmark-border',
+  'pencil': 'edit',
+  'arrow.right.circle': 'logout'
 } as Partial<
   Record<
     import('expo-symbols').SymbolViewProps['name'],
